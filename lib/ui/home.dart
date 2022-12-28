@@ -37,10 +37,41 @@ class MovieListView extends StatelessWidget {
                 trailing: Text("..."),
                 title: Text(movies[index]),
                 subtitle: Text("Buff"),
-                onTap: () => {debugPrint("Movie Name: ${movies[index]}")},
+                // onTap: () => {debugPrint("Movie Name: ${movies[index]}")},
+                onTap: () => {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                        builder: (context) => const MovieListviewDetail()),
+                  ),
+                },
               ),
             );
           }),
+    );
+  }
+}
+
+class MovieListviewDetail extends StatelessWidget {
+  const MovieListviewDetail({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Movie Detail"),
+        backgroundColor: Colors.blueGrey,
+      ),
+      body: Center(
+        child: Container(
+          child: ElevatedButton(
+            child: Text("Go Back"),
+            onPressed: () {
+              debugPrint("navigating back");
+              Navigator.pop(context);
+            },
+          ),
+        ),
+      ),
     );
   }
 }
