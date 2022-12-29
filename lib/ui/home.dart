@@ -1,19 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:quiz/model/movie.dart';
 
 import '../model/question.dart';
 
 class MovieListView extends StatelessWidget {
-  const MovieListView({Key? key}) : super(key: key);
-  static const List movies = [
-    "Heathers"
-        "Europa Report",
-    "Fellowship of the Ring",
-    "Silver Linings Playbook",
-    "Harry Potter",
-    "Main Hoon Na",
-    "Suits",
-    "League of Legends"
-  ];
+  MovieListView({Key? key}) : super(key: key);
+  final List<Movie> movieList = Movie.getMovie();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,42 +15,96 @@ class MovieListView extends StatelessWidget {
       ),
       backgroundColor: Colors.blueGrey,
       body: ListView.builder(
-          itemCount: movies.length,
+          itemCount: movieList.length,
           itemBuilder: (BuildContext, int index) {
-            return Card(
-              elevation: 4.5,
-              color: Colors.white,
-              child: ListTile(
-                leading: CircleAvatar(
-                  child: Container(
-                    child: Text(movies[index][0]),
-                  ),
-                ),
-                trailing: Text("..."),
-                title: Text(movies[index]),
-                subtitle: Text("Buff"),
-                // onTap: () => {debugPrint("Movie Name: ${movies[index]}")},
-                onTap: () => {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                        builder: (context) => const MovieListviewDetail()),
-                  ),
-                },
-              ),
-            );
+            return Stack(children: <Widget>[
+              Positioned(child: movieCard(movieList[index], context)),
+              Positioned(
+                  top: 10, child: movieImage(movieList[index].images[0])),
+            ]);
           }),
+    );
+  }
+
+  Widget movieCard(Movie movie, BuildContext context) {
+    return InkWell(
+      child: Container(
+        margin: EdgeInsets.only(left: 60),
+        width: MediaQuery.of(context).size.width,
+        height: 120,
+        child: Card(
+          color: Colors.black45,
+          child: Padding(
+            padding: const EdgeInsets.only(top: 8.0, bottom: 8.0, left: 54),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Flexible(
+                        child: Text(
+                          movie.title,
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 17,
+                              color: Colors.white),
+                        ),
+                      ),
+                      Text(
+                        "Rating: ${movie.imdbRating} / 10",
+                        style:
+                            const TextStyle(fontSize: 15, color: Colors.grey),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Text("Released: ${movie.released}"),
+                      Text(movie.runtime),
+                      Text(movie.rated),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+      onTap: () => {
+        Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => MovieListviewDetail(movie: movie)))
+      },
+    );
+  }
+
+  Widget movieImage(String imageUrl) {
+    return Container(
+      width: 100,
+      height: 100,
+      decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          image: DecorationImage(
+              image: NetworkImage(imageUrl ??
+                  'https://play-lh.googleusercontent.com/ZyWNGIfzUyoajtFcD7NhMksHEZh37f-MkHVGr5Yfefa-IX7yj9SMfI82Z7a2wpdKCA=w480-h960-rw'),
+              fit: BoxFit.cover)),
     );
   }
 }
 
 class MovieListviewDetail extends StatelessWidget {
-  const MovieListviewDetail({Key? key}) : super(key: key);
+  final Movie movie;
 
+  const MovieListviewDetail({Key? key, required this.movie}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Movie Detail"),
+        title: Text(this.movie.director),
         backgroundColor: Colors.blueGrey,
       ),
       body: Center(
@@ -81,7 +127,7 @@ class Home extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       title: "Quiz App",
       home: MovieListView(),
     );
